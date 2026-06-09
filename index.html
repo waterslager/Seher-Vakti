@@ -321,16 +321,36 @@ async function getIlceler(ilId) {
 async function getVakitlerDiyanet(ilceId) {
   const data = await fetchJSON(`${DIYANET_BASE}/prayer-times/${ilceId}/monthly`);
   return data.map(d => {
-    const iso = new Date(d.date);
+    // API yaniti duz nesne donduruyor; alan adlari buyuk harfli (Imsak, Gunes…)
+    // veya ic ice times nesnesi olabilir — ikisini de dene
+    const t = (d.times && typeof d.times === "object") ? d.times : d;
+    const pick = (a, b) => {
+      const v = t[a] || t[b] || d[a] || d[b] || "";
+      return typeof v === "string" && v.includes(":") ? v.substring(0, 5) : "--:--";
+    };
+
+    // Tarih: "MiladiTarihKisaIso8601" (DD.MM.YYYY), "date" (YYYY-MM-DD), ya da ISO damgasi
+    let dateObj;
+    const raw = d.date || d.MiladiTarihKisaIso8601 || d.MiladiTarihUzunIso8601 || "";
+    if (/^\d{2}\.\d{2}\.\d{4}$/.test(raw)) {
+      const [dd, mm, yyyy] = raw.split(".").map(Number);
+      dateObj = new Date(yyyy, mm - 1, dd);
+    } else if (/^\d{4}-\d{2}-\d{2}/.test(raw)) {
+      const [yyyy, mm, dd] = raw.substring(0, 10).split("-").map(Number);
+      dateObj = new Date(yyyy, mm - 1, dd);
+    } else {
+      dateObj = new Date();
+    }
+
     return {
-      date: new Date(iso.getFullYear(), iso.getMonth(), iso.getDate()),
-      imsak: d.times.imsak,
-      gunes: d.times.gunes,
-      ogle:  d.times.ogle,
-      ikindi: d.times.ikindi,
-      aksam: d.times.aksam,
-      yatsi: d.times.yatsi,
-      hijri: d.hijri_date && d.hijri_date.full_date
+      date:   new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate()),
+      imsak:  pick("imsak",  "Imsak"),
+      gunes:  pick("gunes",  "Gunes"),
+      ogle:   pick("ogle",   "Ogle"),
+      ikindi: pick("ikindi", "Ikindi"),
+      aksam:  pick("aksam",  "Aksam"),
+      yatsi:  pick("yatsi",  "Yatsi"),
+      hijri:  d.HicriTarihUzun || (d.hijri_date && d.hijri_date.full_date) || d.hijriDate || ""
     };
   });
 }
