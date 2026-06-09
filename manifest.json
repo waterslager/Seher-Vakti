@@ -1,6 +1,6 @@
 {
-  "name": "Teheccüd · Seher · Sabah Namazı Vakitleri",
-  "short_name": "Teheccüd",
+  "name": "قِيَامُ اللَّيْل",
+  "short_name": "قِيَامُ اللَّيْل",
   "description": "Diyanet İşleri Başkanlığı verilerine dayalı Teheccüd, Seher ve Sabah Namazı vakitleri.",
   "start_url": "./index.html",
   "display": "standalone",
