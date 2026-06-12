@@ -560,8 +560,16 @@ function findNext(events) {
 }
 
 function highlightNext(period) {
-  const next = findNext(getEvents(period));
   document.querySelectorAll("#otherTimes .item").forEach(el => el.classList.remove("next"));
+
+  const events = getEvents(period);
+  const now = new Date();
+  const tableKeys = ["imsak", "gunes", "ogle", "ikindi", "aksam", "yatsi"];
+
+  const next = events
+    .filter(e => tableKeys.includes(e.key) && e.time > now)
+    .sort((a, b) => a.time - b.time)[0];
+
   if (next) {
     const item = document.querySelector(`#otherTimes .tm[data-key="${next.key}"]`);
     if (item) item.parentElement.classList.add("next");
