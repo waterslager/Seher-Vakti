@@ -2,8 +2,8 @@ const CACHE_NAME = 'kiyamul-leyl-v2';
 const APP_SHELL = [
     './index.html',
     './manifest.json',
-    './icon-192.png',
-    './icon-512.png'
+    './192.png',
+    './512.png'
 ];
 
 self.addEventListener('install', (event) => {
